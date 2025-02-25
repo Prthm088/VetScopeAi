@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VetScopeAi</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .chat-container {
+            width: 400px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        .chat-box {
+            height: 300px;
+            padding: 10px;
+            overflow-y: auto;
+            border-bottom: 1px solid #ddd;
+        }
+        .chat-box .message {
+            margin: 10px 0;
+        }
+        .chat-box .user {
+            text-align: right;
+        }
+        .chat-box .bot {
+            text-align: left;
+        }
+        .input-container {
+            display: flex;
+            padding: 10px;
+        }
+        .input-container input {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .input-container button {
+            padding: 10px;
+            border: none;
+            background-color: #5cb85c;
+            color: white;
+            border-radius: 5px;
+            margin-left: 5px;
+            cursor: pointer;
+        }
+        .input-container button:hover {
+            background-color: #4cae4c;
+        }
+    </style>
+</head>
+<body>
+
+<div class="chat-container">
+    <div class="chat-box" id="chat-box"></div>
+    <div class="input-container">
+        <input type="text" name="user-input" id="user-input" placeholder="Type your message..." />
+        <button onclick="sendMessage()">Send</button>
+    </div>
+</div>
+
+<script>
+    function sendMessage() {
+        const inputField = document.getElementById('user-input');
+        const userMessage = inputField.value;
+        if (userMessage.trim() === '') return;
+
+        // Display user message
+        displayMessage(userMessage, 'user');
+
+        // Clear input field
+        inputField.value = '';
+
+        // Simulate bot response
+        const botResponse = getBotResponse(userMessage);
+        displayMessage(botResponse, 'bot');
+
+    }
+
+    function displayMessage(message, sender) {
+        const chatBox = document.getElementById('chat-box');
+        const messageDiv = document.createElement('div');
+        messageDiv.classList.add('message', sender);
+        messageDiv.textContent = message;
+        chatBox.appendChild(messageDiv);
+        chatBox.scrollTop = chatBox.scrollHeight; // Scroll to the bottom
+    }
+
+    async function getBotResponse(userMessage) {
+        //displayig waiting
+        displayMessage("Generating Response", 'bot');
+
+        // Fetch chatbot response from Django view
+        let response = await fetch(`/chatbot-response/?message=${encodeURIComponent(userMessage)}`);
+        let answer = await response.text();
+        displayMessage(answer, 'bot');
+    }
+</script>
+
+</body>
+</html>
